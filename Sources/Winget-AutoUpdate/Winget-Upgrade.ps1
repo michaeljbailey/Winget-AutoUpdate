@@ -109,6 +109,8 @@ if ($true -eq $IsSystem) {
         #Check if ServiceUI exists
         [string]$fp3 = [System.IO.Path]::Combine($Script:WorkingDir, 'ServiceUI.exe');
         [bool]$ServiceUI = Test-Path $fp3 -PathType Leaf;
+        # Force execution as the root System process. ServiceUI drops the SeDelegateSessionUserImpersonatePrivilege needed for RunAsUser.
+        $ServiceUI = $false
         if ($true -eq $ServiceUI) {
             #Check if any connected user
             $explorerprocesses = @(Get-CimInstance -Query "SELECT * FROM Win32_Process WHERE Name='explorer.exe'" -ErrorAction SilentlyContinue);

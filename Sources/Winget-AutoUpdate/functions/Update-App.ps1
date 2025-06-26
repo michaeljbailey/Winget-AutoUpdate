@@ -1,7 +1,23 @@
 #Function to update an App
 
 Function Update-App ($app) {
-
+    try {
+        $title = "Winget-AutoUpdate Software Upgrade"
+        $message = "$($app.Name) wants to update from $($app.Version) to $($app.AvailableVersion). Please close all windows and click Yes to continue, or click No to cancel this update."
+        $ProceedWithUpdate = Get-UserPromptYesNo -Message $message -Title $title
+        
+        if ($ProceedWithUpdate) {
+            Write-ToLog "User accepted to update $($app.Name) from $($app.Version) to $($app.AvailableVersion)..." "Yellow"
+        } else {
+            Write-ToLog "User declined to update $($app.Name) from $($app.Version) to $($app.AvailableVersion)..." "Yellow"
+            return
+        }
+    }
+    catch {
+        Write-ToLog $("-> Error prompting user {0}" -f $_.Exception.ToString()) "Red"
+        # Continue as if they said yes
+    }
+    
     #Get App Info
     $ReleaseNoteURL = Get-AppInfo $app.Id
     if ($ReleaseNoteURL) {
